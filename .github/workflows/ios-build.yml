@@ -1,0 +1,70 @@
+name: Manual iOS Build for Flet
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install Flet
+      run: pip install flet
+
+    - name: Install requirements
+      run: pip install -r requirements.txt
+
+    - name: Install Xcode Command Line Tools
+      run: |
+        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+        sudo xcodebuild -license accept
+
+    - name: Build iOS IPA
+      run: flet build ipa
+
+    - name: Debug Paths
+      run: |
+        echo "Checking build directories..."
+        ls -R build || echo "No build directory"
+        ls -R build/ios || echo "No build/ios directory"
+        ls -R build/ipa || echo "No build/ipa directory"
+
+    - name: Find Runner.app
+      run: |
+        echo "Searching for Runner.app..."
+        find build -name "Runner.app" || echo "Runner.app not found"
+
+    - name: Create IPA manually if missing
+      run: |
+        if [ ! -f build/ipa/*.ipa ]; then
+          echo "IPA file not found, creating manually..."
+
+          # Ищем Runner.app в разных местах
+          APP_PATH=$(find build -name "Runner.app" | head -n 1)
+
+          if [ -d "$APP_PATH" ]; then
+            mkdir -p build/ipa/Payload
+            cp -r "$APP_PATH" build/ipa/Payload/
+            cd build/ipa
+            zip -r Runner.ipa Payload/
+          else
+            echo "ERROR: Runner.app not found anywhere in build/"
+            exit 1
+          fi
+        else
+          echo "IPA file exists, skipping manual creation."
+        fi
+
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: flet-app-ipa
+        path: build/ipa/*.ipa

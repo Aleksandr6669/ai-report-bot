@@ -1,0 +1,5 @@
+flet
+pyautogui
+pyTelegramBotAPI
+google-generativeai
+Pillow

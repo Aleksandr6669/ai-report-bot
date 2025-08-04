@@ -1,0 +1,42 @@
+name: Manual EXE Build for Flet
+
+on:
+  workflow_dispatch:  # Ручной запуск по кнопке
+
+jobs:
+  build:
+    runs-on: windows-latest  # Используем Windows для сборки .exe
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install Flet
+      run: pip install flet
+
+    - name: Install requirements
+      run: pip install -r requirements.txt
+
+    - name: Set UTF-8 Environment Variable
+      run: |
+        echo "PYTHONIOENCODING=utf-8" >> $GITHUB_ENV
+        echo "PYTHONUTF8=1" >> $GITHUB_ENV
+        chcp 65001
+
+    - name: Build EXE
+      run: |
+        $env:PYTHONIOENCODING="utf-8"
+        $env:PYTHONUTF8="1"
+        flet build windows  # Команда для сборки .exe
+      shell: pwsh
+
+    - name: Upload EXE as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: flet-app
+        path: build  # Замените на фактический путь к вашему .exe файлу

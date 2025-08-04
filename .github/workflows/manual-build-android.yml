@@ -1,0 +1,32 @@
+name: Manual APK Build for Flet
+
+on:
+  workflow_dispatch:  # Ручной запуск по кнопке
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install Flet
+      run: pip install flet
+
+    - name: Install requirements
+      run: pip install -r requirements.txt
+
+    - name: Build APK
+      run: flet build apk  # Твоя команда для билда
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: flet-app-apk
+        path: build/**/*.apk  # Для Android

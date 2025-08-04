@@ -1,0 +1,31 @@
+name: Build and Package Flet Application
+
+on:
+  workflow_dispatch:  # Ручной запуск по кнопке
+
+jobs:
+  build:
+    runs-on: windows-latest  # Используем Windows для сборки .exe
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install flet pyinstaller
+
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --name MyFletApp **/main.py
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyFletApp
+        path: dist/*.exe

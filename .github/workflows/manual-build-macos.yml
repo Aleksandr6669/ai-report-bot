@@ -1,0 +1,32 @@
+name: Manual macOS Build for Flet
+
+on:
+  workflow_dispatch:  # Ручной запуск по кнопке
+
+jobs:
+  build:
+    runs-on: macos-latest  # Используем macOS для сборки
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+
+    - name: Install Flet
+      run: pip install flet
+
+    - name: Install requirements
+      run: pip install -r requirements.txt
+
+    - name: Build macOS App
+      run: flet build macos  # Команда для сборки .app
+
+    - name: Upload macOS App
+      uses: actions/upload-artifact@v4
+      with:
+        name: flet-app-macos
+        path: build/**/*.app

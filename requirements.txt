@@ -1,5 +1,5 @@
 flet
 pyautogui
 pyTelegramBotAPI
-google-generativeai
+google-genai
 Pillow

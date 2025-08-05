@@ -11,7 +11,7 @@ dependencies = [
   "flet==0.28.3",
   "pyautogui",
   "pyTelegramBotAPI",
-  "google-generativeai",
+  "google-genai",
   "Pillow" # Необходим для pyautogui
 ]
 
